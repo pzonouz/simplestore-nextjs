@@ -1,5 +1,6 @@
 import * as z from "zod";
-import { CategoryCreateSchema, CategorySchema } from "../schemas/category";
+import { CategorySchema } from "../schemas/category";
+import { ProductSchema } from "../schemas/product";
 
-export type CategoryCreate = z.infer<typeof CategoryCreateSchema>;
 export type Category = z.infer<typeof CategorySchema>;
+export type Product = z.infer<typeof ProductSchema>;

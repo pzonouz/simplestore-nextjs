@@ -3,7 +3,6 @@ import {
   useDeleteCategoryMutation,
   useGetCategoriesQuery,
 } from "@/app/lib/redux/features/api";
-import { ColumnDef } from "@/app/lib/types/table";
 import { DataTable } from "../data/DataTable";
 import { Collapsible } from "../ui/Collapsible";
 import { CategoryForm } from "./CategoryForm";
@@ -11,25 +10,45 @@ import { Modal } from "../ui/Modal";
 import { useAppSelector } from "@/app/lib/redux/hooks";
 import { ModalType } from "@/app/lib/types/modal";
 import { DeleteAction } from "../data/DeleteAction";
+import { Loading } from "../ui/Loading";
+import { ColumnDef, tableFeatures } from "@tanstack/react-table";
+import { Category } from "@/app/lib/types/generatedTypes";
+import { TableActions } from "../data/TableActions";
 
 export const CategoriesPage = () => {
-  const columnsDef: ColumnDef[] = [
-    { id: "name", name: "نام" },
-    { id: "parentName", name: "والد" },
+  const features = tableFeatures({});
+
+  const columns: Array<ColumnDef<typeof features, Category>> = [
+    {
+      accessorKey: "name", // accessorKey shorthand
+      header: "نام",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorFn: (row) => row.parentName,
+      id: "parentName",
+      header: () => <span>والد</span>,
+      cell: (info) => <i>{info.getValue<string>()}</i>,
+    },
+    {
+      accessorKey: "actions",
+      header: () => <span>عملیات</span>,
+      cell: ({ row }) => <TableActions id={row?.original?.id} />,
+    },
   ];
   const { data: categories } = useGetCategoriesQuery();
   const modalType: ModalType = useAppSelector((state) => state.modal.type);
   const [deleteAction, { isLoading: deleteLoading }] =
     useDeleteCategoryMutation();
   return (
-    <div className="w-screen h-screen ">
+    <div>
       <Collapsible>
         <CategoryForm />
       </Collapsible>
       {categories ? (
-        <DataTable columns={columnsDef} data={categories} />
+        <DataTable columns={columns} data={categories} />
       ) : (
-        <div className="loading loading-spinner loading-xl"></div>
+        <Loading />
       )}
       <Modal>
         {modalType == "EDIT" && <CategoryForm />}

@@ -26,7 +26,7 @@ export const Modal = ({ children }: { children: React.ReactNode }) => {
         }
       }}
     >
-      <div className="w-3/4 h-48 overflow-y-hidden">{children}</div>
+      <div className="w-3/4">{children}</div>
     </dialog>
   );
 };

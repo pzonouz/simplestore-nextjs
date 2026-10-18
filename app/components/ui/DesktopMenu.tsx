@@ -6,7 +6,7 @@ import { yekan } from "@/app/lib/fonts";
 export const DesktopMenu = ({ menuItems }: { menuItems: MenuItem[] }) => {
   return (
     <div
-      className={`m-4 p-4 gap-6 rounded-xl text-sky-950 bg-gray-50 w-3/4 mx-auto flex flex-row items-center ${yekan.className}`}
+      className={`w-full p-3  gap-6 rounded-xl text-sky-950 bg-gray-50 flex flex-row items-center ${yekan.className}`}
     >
       {menuItems?.map((item) => (
         <RecursiveDesktopMenuItem

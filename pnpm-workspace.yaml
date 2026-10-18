@@ -1,3 +1,7 @@
 allowBuilds:
+  core-js: false
+  core-js-pure: false
+  ejs: false
+  es5-ext: false
   sharp: false
   unrs-resolver: false

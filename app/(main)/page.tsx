@@ -1,7 +1,21 @@
-import React from "react";
+import { Product } from "../lib/types/generatedTypes";
+import { ProductCard } from "../components/ui/ProductCard";
+import Carousel from "../components/ui/Carousel";
 
-const page = () => {
-  return <div>page</div>;
+const page = async () => {
+  const productsRes = await fetch(`${process.env.BACKEND_URL}/products/`);
+  const products: Product[] = await productsRes.json();
+  return (
+    <div>
+      <Carousel>
+        {products?.map((item) => (
+          <div className="flex items-center justify-center h-full">
+            <ProductCard key={item?.id} product={item} />
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
 };
 
 export default page;

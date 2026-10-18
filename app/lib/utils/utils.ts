@@ -26,3 +26,7 @@ export const setToasterErrorMessage = (
   }
   dispatch(setToasterEnable(true));
 };
+
+export const Slugify = (name: string) => {
+  return name.replaceAll(" ", "_")
+}

@@ -1,30 +1,16 @@
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { isArray } from "util";
-
-export const translateError = (err: FetchBaseQueryError) => {
+export type ErrorType = { data: { errors: { detail: string }[] } };
+export const translateError = (err: ErrorType) => {
   const errors: string[] = [];
-  if (err.status == 400) {
-    const entries = Object.entries(err?.data as Object);
-    entries?.map((entry) => {
-      if (isArray(entry)) {
-        entry?.map((item) => {
-          if (isArray(item)) {
-            item?.map((i) => {
-              switch (i) {
-                case "category with this name already exists.":
-                  errors.push("نام دسته بندی تکراری است");
-              }
-            });
-          }
-        });
-      }
-    });
-  }
-  if (err.originalStatus == 500) {
-    const data: string = err.data as string;
-    if (data.includes("ProtectedError") && data.includes("categories")) {
-      errors.push("اول زیردسته ها را حذف کنید");
+  err.data.errors.map((item) => {
+    if (item.detail.includes("category with this name already exists")) {
+      errors.push("نام دسته بندی تکراری است");
     }
-  }
+    if (item.detail.includes("product with this name already exists")) {
+      errors.push("نام کالا تکراری است");
+    }
+    if (item.detail.includes("protected foreign keys")) {
+      errors.push("اول وابستگی ها را حذف کنید");
+    }
+  });
   return errors;
 };

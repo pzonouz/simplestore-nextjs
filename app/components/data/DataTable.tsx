@@ -1,50 +1,47 @@
-import { ColumnDef } from "@/app/lib/types/table";
-import { TableActions } from "./TableActions";
-
+import { ColumnDef, tableFeatures, useTable } from "@tanstack/react-table";
+const features = tableFeatures({});
 export const DataTable = <T extends { id?: string; name?: string }>({
   columns,
   data,
 }: {
-  columns: ColumnDef[];
-  data: T[];
+  columns: Array<ColumnDef<typeof features, T>>;
+  data: Array<T>;
 }) => {
-  return (
-    <div className="overflow-x-auto">
-      <table className="table">
-        {/* head */}
-        <thead>
-          <tr>
-            <th>
-              <label>
-                <input type="checkbox" className="checkbox" />
-              </label>
-            </th>
-            {columns?.map((column) => (
-              <th key={column?.id}>{column?.name}</th>
-            ))}
-            <th>عملیات</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* row 1 */}
-          {data?.map((item) => (
-            <tr key={item?.id}>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
-              {columns?.map((col) => (
-                <td key={col?.id}>{item[col.id]}</td>
-              ))}
+  const features = tableFeatures({});
 
-              <th>
-                <TableActions id={item["id"]} />
+  const table = useTable({
+    key: "category-table",
+    features,
+    columns,
+    data,
+  });
+
+  return (
+    <table className="table">
+      <thead>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <th key={header.id}>
+                {header.isPlaceholder ? null : (
+                  <table.FlexRender header={header} />
+                )}
               </th>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody>
+        {table.getRowModel().rows.map((row) => (
+          <tr key={row.id}>
+            {row.getAllCells().map((cell) => (
+              <td key={cell.id}>
+                <table.FlexRender cell={cell} />
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };

@@ -4,14 +4,9 @@ import {
   useUpdateCategoryMutation,
 } from "@/app/lib/redux/features/api";
 import { setModalId } from "@/app/lib/redux/features/modal";
-import {
-  setToasterEnable,
-  setToasterText,
-} from "@/app/lib/redux/features/toaster";
 import { useAppDispatch, useAppSelector } from "@/app/lib/redux/hooks";
-import { CategoryCreateSchema } from "@/app/lib/schemas/category";
-import { CategoryCreate } from "@/app/lib/types/generatedTypes";
-import { successMessage } from "@/app/lib/utils/constants";
+import { CategorySchema } from "@/app/lib/schemas/category";
+import { Category } from "@/app/lib/types/generatedTypes";
 import { translateError } from "@/app/lib/utils/translate";
 import { setToasterSuccessMessage } from "@/app/lib/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +26,7 @@ export const CategoryForm = () => {
   const values = useMemo(() => {
     return modalType == "EDIT"
       ? categories?.find((c) => c.id == id)
-      : { name: "", parent: "", description: "" };
+      : { name: "", parent: "", description: "", id: "" };
   }, [modalType, id]);
 
   const dispatch = useAppDispatch();
@@ -41,16 +36,14 @@ export const CategoryForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(CategoryCreateSchema),
+  } = useForm<Category>({
+    resolver: zodResolver(CategorySchema),
     values: values,
   });
 
-  const submitHandler = (data: CategoryCreate) => {
+  const submitHandler = (data: Category) => {
     const action =
-      modalType == "EDIT" && id
-        ? updateCategory({ id, ...data })
-        : createCategory(data);
+      modalType == "EDIT" && id ? updateCategory(data) : createCategory(data);
 
     action
       .unwrap()
@@ -72,6 +65,7 @@ export const CategoryForm = () => {
       className="fieldset grid grid-cols-2 gap-2 bg-base-200 border-base-300 rounded-box w-full border p-4"
     >
       <div className="grid grid-cols-1 gap-2">
+        <input {...register("id")} type="text" className="hidden" />
         <input
           type="text"
           {...register("name")}
