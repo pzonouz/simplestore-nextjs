@@ -23,7 +23,7 @@ export const Toaster = () => {
     enable && (
       <div
         className={clsx(
-          "fixed bottom-6 w-1/3 justify-between border border-gray-300 right-1/2 translate-x-1/2 p-2 px-6 rounded-xl flex items-center",
+          "z-100 fixed bottom-6 w-1/3 justify-between border border-gray-300 right-1/2 translate-x-1/2 p-2 px-6 rounded-xl flex items-center",
           {
             "bg-emerald-400 text-white": type == "Success",
             "bg-red-800 text-white": type == "Error",

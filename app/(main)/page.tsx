@@ -7,13 +7,15 @@ const page = async () => {
   const products: Product[] = await productsRes.json();
   return (
     <div>
-      <Carousel>
-        {products?.map((item) => (
-          <div className="flex items-center justify-center h-full">
-            <ProductCard key={item?.id} product={item} />
-          </div>
-        ))}
-      </Carousel>
+      {products && products.length > 0 && (
+        <Carousel>
+          {products?.map((item) => (
+            <div className="flex items-center justify-center h-full">
+              <ProductCard key={item?.id} product={item} />
+            </div>
+          ))}
+        </Carousel>
+      )}
     </div>
   );
 };

@@ -1,44 +1,62 @@
-"use client"
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useRouter} from "next/navigation"
-import * as z from "zod"
-import {useSearchParams} from "next/navigation";
-import clsx from "clsx";
+"use client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-
-const loginSchema = z.object({
-    email: z.string().min(1, {message: "ایمیل را وارد کنید"}),
-    password: z.string().min(1, {message: "پسورد را وارد کنید"})
-})
+import { FormTextInput } from "@/app/components/ui/FormTextInput";
+import { LoginSchema, RegisterSchema } from "@/app/lib/schemas/auth";
+import { useLoginMutation } from "@/app/lib/redux/features/api";
+import { useAppDispatch } from "@/app/lib/redux/hooks";
+import { setToasterSuccessMessage } from "@/app/lib/utils/utils";
+import { successMessage } from "@/app/lib/utils/constants";
 
 const Page = () => {
-    const {formState: {errors}, register, handleSubmit} = useForm({resolver: zodResolver(loginSchema)})
-    const query = useSearchParams()
-    const callback = query.get("callback")
-    const router = useRouter()
-    return (
-        <form onSubmit={handleSubmit((data) => {
-            fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}auth/login/`, {
-                headers: {"Content-Type": "application/json"},
-                method: "POST",
-                body: JSON.stringify(data)
-            }).then(() => {
-                window.location.href = callback ? `/${callback}` : "/profile"
-            }).catch((err) => {
-            })
-        })} className="flex flex-col gap-2 w-full max-w-lg  my-26 mx-auto justify-center">
-            <label className=" text-lg font-bold text-center my-4 w-full">ورود</label>
-            <input {...register("email")} type="text" className={clsx("input w-full", {"border-error": errors.email})}
-                   placeholder="ایمیل"/>
-            <p className="-mt-2 text-error text-right text-sm">{errors.email?.message}</p>
-            <input {...register("password")} type="password"
-                   className={clsx("input w-full", {"border-error": errors.password})} placeholder="پسورد"/>
-            <p className="-mt-2 text-error text-right text-sm">{errors.password?.message}</p>
-            <button type="submit" className="btn btn-primary w-full">ثبت</button>
-            <div className="flex items-center justify-between"><Link href="/auth/ergister">ایجاد حساب</Link><Link
-                href="/auth/reset">فراموشی رمز</Link></div>
-        </form>
-    )
-}
-export default Page
+  const query = useSearchParams();
+  const callback = query.get("next");
+  const {
+    formState: { errors },
+    register,
+    handleSubmit,
+  } = useForm({ resolver: zodResolver(LoginSchema) });
+  const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  return (
+    <form
+      onSubmit={handleSubmit((data) => {
+        login(data)
+          .unwrap()
+          .then(() => {
+            setToasterSuccessMessage(dispatch);
+            if (callback) {
+              router.replace(callback);
+            } else {
+              router.replace("/profile");
+            }
+          })
+          .catch(() => {});
+      })}
+      className="flex flex-col gap-4 w-full max-w-lg mt-12 mb-40 mx-auto justify-center"
+    >
+      <label className=" text-lg font-bold text-center w-full">ورود</label>
+      <FormTextInput
+        error={errors.email}
+        placeholder="ایمیل"
+        register={register("email")}
+        type="text"
+      />
+      <FormTextInput
+        error={errors.password}
+        placeholder="پسورد"
+        register={register("password")}
+        type="password"
+      />
+      <button className="btn btn-primary w-full">ثبت</button>
+      <div className="flex items-center justify-between">
+        <Link href="/auth/register">ایجاد حساب</Link>
+        <Link href="/auth/reset">فراموشی رمز</Link>
+      </div>
+    </form>
+  );
+};
+export default Page;

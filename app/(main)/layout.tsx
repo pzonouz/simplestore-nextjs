@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Searchbar } from "../components/ui/Searchbar";
 import { ShoppingCartIcon, UserSquare } from "lucide-react";
 import { Footer } from "../components/ui/Footer";
+import Link from "next/link";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   const menuItems: MenuItem[] = [
@@ -39,7 +40,9 @@ const layout = ({ children }: { children: React.ReactNode }) => {
           className="flex gap-4 items-center justify-between"
         >
           <div className="flex items-center gap-4">
-            <Image alt="logo" width={100} height={100} src="/imgs/Logo.jpg" />
+            <Link href="/">
+              <Image alt="logo" width={100} height={100} src="/imgs/Logo.jpg" />
+            </Link>
             <Searchbar className="hidden sm:flex" />
           </div>
           <div className="flex flex-row gap-2">
@@ -53,7 +56,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
         </div>
         <DesktopMenu menuItems={menuItems} />
       </div>
-      <div className="mt-8 mx-8">{children}</div>
+      <div className="mt-8 mx-8 flex flex-1">{children}</div>
       <Footer />
     </div>
   );

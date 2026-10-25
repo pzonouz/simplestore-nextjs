@@ -1,16 +1,21 @@
-export type ErrorType = { data: { errors: { detail: string }[] } };
-export const translateError = (err: ErrorType) => {
-  const errors: string[] = [];
-  err.data.errors.map((item) => {
-    if (item.detail.includes("category with this name already exists")) {
-      errors.push("نام دسته بندی تکراری است");
-    }
-    if (item.detail.includes("product with this name already exists")) {
-      errors.push("نام کالا تکراری است");
-    }
-    if (item.detail.includes("protected foreign keys")) {
-      errors.push("اول وابستگی ها را حذف کنید");
-    }
-  });
-  return errors;
+export const translateError = (err: { data: string }) => {
+  if (err?.data?.includes("category with this name already exists")) {
+    return ("نام دسته بندی تکراری است");
+  }
+  if (err?.data?.includes("product with this name already exists")) {
+    return ("نام کالا تکراری است");
+  }
+  if (err?.data?.includes("protected foreign keys")) {
+    return ("اول وابستگی ها را حذف کنید");
+  }
+  if (err?.data?.includes(`duplicate key value violates unique constraint "users_email_key" (SQLSTATE 23505)\n`)) {
+    return ("ایمیل قبلا وجود دارد");
+  }
+  if (err?.data?.includes(`duplicate key value violates unique constraint "categories_name_key"`)) {
+    return ("نام تکراری است");
+  }
+  if (err?.data?.includes(`duplicate key value violates unique constraint "files_name_key" `)) {
+    return ("نام تکراری است");
+  }
+  return err?.data
 };

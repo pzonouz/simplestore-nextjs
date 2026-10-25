@@ -20,7 +20,7 @@ export const CategoriesPage = () => {
 
   const columns: Array<ColumnDef<typeof features, Category>> = [
     {
-      accessorKey: "name", // accessorKey shorthand
+      accessorKey: "name",
       header: "نام",
       cell: (info) => info.getValue(),
     },

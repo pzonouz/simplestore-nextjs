@@ -16,6 +16,7 @@ import { Collapsible } from "../../ui/Collapsible";
 import { UploadImage } from "./UploadImage";
 import { X } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
+import { placeHolderImage } from "@/app/lib/utils/constants";
 
 export const ImageSelect = ({
   open,
@@ -54,14 +55,18 @@ export const ImageSelect = ({
     {
       accessorFn: () => "file",
       header: "عکس",
-      cell: ({ row }) => (
-        <Image
-          src={row?.original?.file || ""}
-          width={100}
-          height={100}
-          alt={row?.original?.name}
-        />
-      ),
+      cell: ({ row }) => {
+        return (
+          row?.original?.url && (
+            <Image
+              src={`${process.env.NEXT_PUBLIC_BASE_URL}${row?.original?.url || placeHolderImage}`}
+              width={100}
+              height={100}
+              alt={row?.original?.name}
+            />
+          )
+        );
+      },
     },
     {
       accessorKey: "actions",

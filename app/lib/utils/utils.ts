@@ -6,7 +6,6 @@ import {
   setToasterText,
   setToasterType,
 } from "../redux/features/toaster";
-import { useAppDispatch } from "../redux/hooks";
 import { successMessage } from "./constants";
 
 export const setToasterSuccessMessage = (dispatch: any) => {
@@ -29,4 +28,12 @@ export const setToasterErrorMessage = (
 
 export const Slugify = (name: string) => {
   return name.replaceAll(" ", "_")
+}
+
+export const NormalizeFrontToBack = (data: Record<string, any>): Record<string, any> => {
+  const output: Record<string, any> = {}
+  for (const [key, value] of Object.entries(data)) {
+    output[key] = value === "" ? null : value
+  }
+  return output
 }

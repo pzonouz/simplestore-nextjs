@@ -1,8 +1,8 @@
-import { MapPinIcon, Phone, PhoneIcon, Smartphone } from "lucide-react";
+import { MapPinIcon, Phone, Smartphone } from "lucide-react";
 
 export const Footer = () => {
   return (
-    <div className="bg-sky-950 flex flex-col gap-4 text-white mx-8 p-8">
+    <div className=" w-screen bg-sky-950 flex flex-col gap-4 text-white mx-8 p-8">
       <div className="flex gap-2">
         <div className="flex gap-2 w-48">
           <MapPinIcon />

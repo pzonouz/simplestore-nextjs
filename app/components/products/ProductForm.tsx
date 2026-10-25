@@ -19,6 +19,9 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { Product } from "@/app/lib/types/generatedTypes";
 import { TipTap } from "../ui/Tiptop";
+import { placeHolderImage } from "@/app/lib/utils/constants";
+import { DevTool } from "@hookform/devtools";
+
 export const ProductForm = () => {
   const id = useAppSelector((state) => state.modal.id);
   const modalType = useAppSelector((state) => state?.modal.type);
@@ -39,21 +42,22 @@ export const ProductForm = () => {
   const dispatch = useAppDispatch();
   const [imageOpen, setImageOpen] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [backendErrors, setBackendErrors] = useState<string[]>([]);
+  const [backendError, setBackendError] = useState<string>();
   const {
     register,
     handleSubmit,
     reset,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<Product>({
     resolver: zodResolver(ProductSchema),
     values: values,
   });
   useEffect(() => {
-    if (selectedImage?.file) {
-      setValue("imageUrl", selectedImage?.file);
+    if (selectedImage?.url) {
+      setValue("imageUrl", selectedImage?.url);
     }
   }, [selectedImage]);
   useEffect(() => {
@@ -71,15 +75,15 @@ export const ProductForm = () => {
     action
       .unwrap()
       .then(() => {
-        setBackendErrors([]);
+        setBackendError("");
         reset();
         dispatch(setModalId(null));
         setToasterSuccessMessage(dispatch);
       })
       .catch((err) => {
-        setBackendErrors([]);
+        setBackendError("");
         const translated = translateError(err);
-        if (translated) setBackendErrors(translated);
+        if (translated) setBackendError(translated);
       });
   };
   return (
@@ -140,20 +144,22 @@ export const ProductForm = () => {
                 className="absolute top-3 right-3 text-error cursor-pointer hover:bg-error hover:text-white"
               />
             </div>
-            <Image
-              className="p-2"
-              width={100}
-              height={100}
-              src={selectedImage.file || ""}
-              alt={selectedImage.name}
-            />
+            {selectedImage?.url && (
+              <Image
+                className="p-2"
+                width={100}
+                height={100}
+                src={`${process.env.NEXT_PUBLIC_BASE_URL}${selectedImage.url || placeHolderImage}`}
+                alt={selectedImage.name}
+              />
+            )}
           </div>
         )}
         {errors?.name && (
           <div className="text-error text-xs -mt-1">
             {errors?.name?.message}
           </div>
-        )}{" "}
+        )}
         <select className="select w-full" {...register("category")}>
           {categories?.map((item) => (
             <option value={item?.id} key={item?.id}>
@@ -175,9 +181,7 @@ export const ProductForm = () => {
             <span>ثبت</span>
           )}
         </button>
-        {backendErrors?.map((err) => (
-          <div key={err}>{err}</div>
-        ))}
+        {backendError && <div>{backendError}</div>}
       </form>
     </>
   );

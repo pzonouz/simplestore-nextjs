@@ -27,7 +27,7 @@ export default ({ children }: { children: React.ReactNode[] }) => {
         slidesPerView={1}
         // pagination={{ clickable: true }}
         // scrollbar={{ draggable: true }}
-        onSwiper={(swiper) => console.log(swiper)}
+        onSwiper={(swiper) => swiper}
         onSlideChange={() => console.log("slide change")}
         centeredSlides={true}
         breakpoints={{

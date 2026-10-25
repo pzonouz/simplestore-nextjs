@@ -8,7 +8,10 @@ import { useAppDispatch, useAppSelector } from "@/app/lib/redux/hooks";
 import { CategorySchema } from "@/app/lib/schemas/category";
 import { Category } from "@/app/lib/types/generatedTypes";
 import { translateError } from "@/app/lib/utils/translate";
-import { setToasterSuccessMessage } from "@/app/lib/utils/utils";
+import {
+  NormalizeFrontToBack,
+  setToasterSuccessMessage,
+} from "@/app/lib/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { useMemo, useState } from "react";
@@ -30,11 +33,12 @@ export const CategoryForm = () => {
   }, [modalType, id]);
 
   const dispatch = useAppDispatch();
-  const [backendErrors, setBackendErrors] = useState<string[]>([]);
+  const [backendError, setBackendError] = useState<string>("");
   const {
     register,
     handleSubmit,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<Category>({
     resolver: zodResolver(CategorySchema),
@@ -42,21 +46,23 @@ export const CategoryForm = () => {
   });
 
   const submitHandler = (data: Category) => {
+    const normalizedData = NormalizeFrontToBack(data);
     const action =
-      modalType == "EDIT" && id ? updateCategory(data) : createCategory(data);
-
+      modalType == "EDIT" && id
+        ? updateCategory(normalizedData as Category)
+        : createCategory(normalizedData as Category);
     action
       .unwrap()
       .then(() => {
-        setBackendErrors([]);
+        setBackendError("");
         reset();
         dispatch(setModalId(null));
         setToasterSuccessMessage(dispatch);
       })
       .catch((err) => {
-        setBackendErrors([]);
+        setBackendError("");
         const translated = translateError(err);
-        if (translated) setBackendErrors(translated);
+        if (translated) setBackendError(translated);
       });
   };
   return (
@@ -81,11 +87,13 @@ export const CategoryForm = () => {
         )}
         <select {...register("parent")} className="select w-full">
           <option value="">بدون والد</option>
-          {categories?.map((item) => (
-            <option key={item?.id} value={item?.id}>
-              {item?.name}
-            </option>
-          ))}
+          {categories
+            ?.filter((item) => item?.id != getValues("id"))
+            ?.map((item) => (
+              <option key={item?.id} value={item?.id}>
+                {item?.name}
+              </option>
+            ))}
         </select>
         <button className="btn btn-neutral w-full">
           {CreateCategoryLoading || UpdateCategoryLoading ? (
@@ -100,11 +108,9 @@ export const CategoryForm = () => {
         className="textarea w-full"
         placeholder="توضیحات"
       ></textarea>
-      <div className="col-span-2 text-error">
-        {backendErrors?.map((err) => (
-          <div key={err}>{err}</div>
-        ))}
-      </div>
+      {backendError && (
+        <div className="col-span-2 text-error">{backendError}</div>
+      )}
     </form>
   );
 };
