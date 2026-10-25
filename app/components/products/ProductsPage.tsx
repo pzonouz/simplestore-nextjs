@@ -7,7 +7,7 @@ import { DataTable } from "../data/DataTable";
 import { Collapsible } from "../ui/Collapsible";
 import { Modal } from "../ui/Modal";
 import { useAppSelector } from "@/app/lib/redux/hooks";
-import { ModalType } from "@/app/lib/types/modal";
+import { ModalEntity, ModalType } from "@/app/lib/types/modal";
 import { DeleteAction } from "../data/DeleteAction";
 import { Loading } from "../ui/Loading";
 import { ProductForm } from "./ProductForm";
@@ -36,6 +36,9 @@ export const ProductsPage = () => {
   ];
   const { data: products } = useGetProductsQuery();
   const modalType: ModalType = useAppSelector((state) => state.modal.type);
+  const modalEntity: ModalEntity = useAppSelector(
+    (state) => state.modal.entity,
+  );
   const [deleteAction, { isLoading: deleteLoading }] =
     useDeleteProductMutation();
   return (
@@ -46,7 +49,9 @@ export const ProductsPage = () => {
       {products ? <DataTable columns={columns} data={products} /> : <Loading />}
       <Modal>
         {modalType == "EDIT" && <ProductForm />}
-        {modalType == "DELETE" && <DeleteAction deleteAction={deleteAction} />}
+        {modalType == "DELETE" && modalEntity == "Product" && (
+          <DeleteAction deleteAction={deleteAction} />
+        )}
       </Modal>
     </div>
   );

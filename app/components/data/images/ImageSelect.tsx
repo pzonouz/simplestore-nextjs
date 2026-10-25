@@ -28,6 +28,7 @@ export const ImageSelect = ({
   setSelectedImage: Dispatch<SetStateAction<File | null>>;
 }) => {
   const modalType = useAppSelector((state) => state.modal.type);
+  const modalEntity = useAppSelector((state) => state.modal.entity);
   const { data: files } = useGetFilesQuery();
   const features = tableFeatures({});
   const columns: Array<ColumnDef<typeof features, File>> = [
@@ -71,7 +72,7 @@ export const ImageSelect = ({
     {
       accessorKey: "actions",
       header: () => " عملیات",
-      cell: ({ row }) => <TableActions id={row?.original?.id} />,
+      cell: ({ row }) => <TableActions entity="Image" id={row?.original?.id} />,
     },
   ];
   const [deleteAction, {}] = useDeleteFileMutation();
@@ -90,8 +91,8 @@ export const ImageSelect = ({
           <UploadImage />
         </Collapsible>
         {files ? <DataTable columns={columns} data={files} /> : <Loading />}
-        <Modal>
-          {modalType == "DELETE" && (
+        <Modal className="z-100 bg-white">
+          {modalType == "DELETE" && modalEntity == "Image" && (
             <DeleteAction deleteAction={deleteAction} />
           )}
         </Modal>

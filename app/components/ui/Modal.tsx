@@ -3,7 +3,13 @@ import { setModalId } from "@/app/lib/redux/features/modal";
 import { useAppDispatch, useAppSelector } from "@/app/lib/redux/hooks";
 import { useEffect, useRef } from "react";
 
-export const Modal = ({ children }: { children: React.ReactNode }) => {
+export const Modal = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   const id = useAppSelector((state) => state.modal.id);
   const ref = useRef<HTMLDialogElement>(null);
   const dispatch = useAppDispatch();
@@ -26,7 +32,7 @@ export const Modal = ({ children }: { children: React.ReactNode }) => {
         }
       }}
     >
-      <div className="w-3/4">{children}</div>
+      <div className={`w-3/4 ${className}`}>{children}</div>
     </dialog>
   );
 };
